@@ -3,7 +3,7 @@
 A modern, user-friendly desktop application to visually control the powerful [scrcpy](https://github.com/Genymobile/scrcpy) command-line tool. This GUI provides a simple way to configure and launch `scrcpy` with all your favorite settings, without needing to memorize command-line arguments.
 
 <p align="center">
-  <img src="assets/Screenshot.png" alt="Scrcpy GUI Screenshot" width="500">
+  <img src="assets/Screenshot.png" alt="Scrcpy GUI Screenshot" width="200">
 </p>
 
 ## ✨ Features
