@@ -2,7 +2,9 @@
 
 A modern, user-friendly desktop application to visually control the powerful [scrcpy](https://github.com/Genymobile/scrcpy) command-line tool. This GUI provides a simple way to configure and launch `scrcpy` with all your favorite settings, without needing to memorize command-line arguments.
 
-![Scrcpy GUI Screenshot](assets/Screenshot.png)
+<p align="center">
+  <img src="assets/Screenshot.png" alt="Scrcpy GUI Screenshot" width="500">
+</p>
 
 ## ✨ Features
 
@@ -14,9 +16,15 @@ A modern, user-friendly desktop application to visually control the powerful [sc
 - **Persistent Settings:** Your configuration is automatically saved when you close the app and reloaded on the next launch.
 - **Cross-Platform:** Built with Python and Tkinter, it works on Windows, macOS, and Linux.
 
+## 📥 Download
+
+You can download the latest release of the application from the [**Releases Page**](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/releases).
+
+For users who prefer to run from source, please follow the installation instructions below.
+
 ## 🚀 Installation
 
-To use the Scrcpy GUI Controller, you need to have Python and `scrcpy` installed on your system.
+To use the Scrcpy GUI Controller from source, you need to have Python and `scrcpy` installed on your system.
 
 ### 1. Install Python
 
