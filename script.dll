@@ -1,1 +1,0 @@
-pyinstaller --onefile --windowed --icon="assets/icon.ico" --add-data="assets/icon.png;." --add-data="C:\Users\okato\AppData\Local\Programs\Python\Python310\lib\site-packages\sv_ttk;sv_ttk" scrcpygui.py
