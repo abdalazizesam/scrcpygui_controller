@@ -18,7 +18,7 @@ A modern, user-friendly desktop application to visually control the powerful [sc
 
 ## 📥 Download
 
-You can download the latest release of the application from the [**Releases Page**](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/releases).
+You can download the latest release of the application from the [**Releases Page**](https://github.com/abdalazizesam/scrcpygui_controller/releases).
 
 For users who prefer to run from source, please follow the installation instructions below.
 
