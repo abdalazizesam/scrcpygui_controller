@@ -18,6 +18,58 @@ except ImportError:
     sys.exit(1)
 
 
+class ScrollableFrame(ttk.Frame):
+    """A scrollable frame widget that can contain other widgets."""
+    
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        
+        # Create canvas and scrollbar
+        self.canvas = tk.Canvas(self, highlightthickness=0)
+        self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
+        
+        # Configure canvas scrolling
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        
+        # Create window in canvas
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        
+        # Configure canvas to update scrollable frame width
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas_window, width=e.width)
+        )
+        
+        # Configure scrollbar
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        
+        # Pack canvas and scrollbar
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+        
+        # Bind mouse wheel to canvas
+        self.bind_mousewheel()
+    
+    def bind_mousewheel(self):
+        """Bind mouse wheel events to the canvas."""
+        def _on_mousewheel(event):
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        
+        def _bind_to_mousewheel(event):
+            self.canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        def _unbind_from_mousewheel(event):
+            self.canvas.unbind_all("<MouseWheel>")
+        
+        # Bind mouse wheel when mouse enters the widget
+        self.canvas.bind('<Enter>', _bind_to_mousewheel)
+        self.canvas.bind('<Leave>', _unbind_from_mousewheel)
+
+
 class ScrcpyController(tk.Tk):
     """
     A Tkinter-based GUI for scrcpy with a modern theme, providing an
@@ -58,13 +110,15 @@ class ScrcpyController(tk.Tk):
         self._create_widgets()
 
         self._update_ui_from_loaded_settings()
+
         atexit.register(self.save_settings)
 
     def _configure_window(self):
         """Sets up the main window properties."""
         self.title("Scrcpy GUI Controller")
         self.geometry("610x1000")
-        self.resizable(False, False)
+        self.minsize(500, 400)  # Reduced minimum height since we now have scrolling
+        self.resizable(True, True)  # Allow resizing in both directions
 
         # --- Cross-Platform Icon Handling ---
         try:
@@ -81,6 +135,35 @@ class ScrcpyController(tk.Tk):
         except Exception as e:
             print(f"Error setting icon: {e}")
             # The app will still run, just with a default icon.
+
+
+    def _create_fullscreen_options_frame(self, master):
+        """Frame for fullscreen behavior options."""
+        frame = ttk.LabelFrame(master, text="Fullscreen Options", padding="10")
+        frame.pack(fill="x", expand=True, pady=10)
+        
+        # Add fullscreen exit method selection
+        self.fullscreen_exit_method = tk.StringVar(value="ESC Key")
+        
+        ttk.Label(frame, text="Exit Fullscreen Method:").grid(row=0, column=0, sticky="w", padx=5)
+        
+        exit_methods = ["ESC Key", "Alt+Tab", "Windows Key", "Custom Hotkey", "All Methods"]
+        exit_combo = ttk.Combobox(frame, textvariable=self.fullscreen_exit_method, 
+                                values=exit_methods, state="readonly", width=15)
+        exit_combo.grid(row=0, column=1, sticky="w", padx=5)
+        
+        # Add option to show exit instructions
+        self.show_fullscreen_help = tk.BooleanVar(value=True)
+        ttk.Checkbutton(frame, text="Show fullscreen exit instructions", 
+                    variable=self.show_fullscreen_help, 
+                    style="Switch.TCheckbutton").grid(row=1, column=0, columnspan=2, sticky="w", padx=5, pady=5)
+        
+        # Add always on top option when not fullscreen
+        self.windowed_on_top = tk.BooleanVar()
+        ttk.Checkbutton(frame, text="Keep window on top when not fullscreen", 
+                    variable=self.windowed_on_top, 
+                    style="Switch.TCheckbutton").grid(row=2, column=0, columnspan=2, sticky="w", padx=5, pady=5)
+
 
     def _initialize_variables(self):
         """Initializes all Tkinter variables with default values."""
@@ -137,7 +220,16 @@ class ScrcpyController(tk.Tk):
 
     def _create_widgets(self):
         """Creates and arranges all GUI elements in the window."""
-        main_frame = ttk.Frame(self, padding="20")
+        # Create main container
+        container = ttk.Frame(self)
+        container.pack(fill="both", expand=True)
+        
+        # Create scrollable frame
+        self.scrollable_frame = ScrollableFrame(container)
+        self.scrollable_frame.pack(fill="both", expand=True)
+        
+        # Create main content frame inside scrollable frame
+        main_frame = ttk.Frame(self.scrollable_frame.scrollable_frame, padding="20")
         main_frame.pack(expand=True, fill="both")
 
         self._create_header(main_frame)
